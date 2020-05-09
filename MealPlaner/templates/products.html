@@ -1,36 +1,46 @@
 {% extends 'base.html' %}
-{% block content %}
-<div class="page-header">
-    <h1>{{ title }}</h1>
-</div>
-<div class="row">
-    <div class="col-md-9">
-        <div class="tab-content">
-            {% for product in products %}
-                <div id="{{ product.id }}" class="tab-pane fade
-                    {% if forloop.counter0 == 0 %}
-                    in active
-                    {% endif %}">
-                <h3>{{ product.name }}</h3>
-                <p>Kcal: {{ product.kcalPer100g }}</p>
-                <p>Białko: {{ product.proteinsPer100g }}</p>
-                <p>Błonnik: {{ product.fiberPer100g }}</p>
-                <p>Tłuszcz: {{ product.fatPer100g }}</p>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-<div class="col-md-2">
-    <ul class="nav nav-pills nav-stacked">
-        {% for product in products %}
 
-        <li {% if forloop.counter0 == 0 %}
-        clss="active"
-        {% endif %}>
-            <a data-toggle="pill" href="#{{ product.id }}">{{ product.name }}</a>
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-</div>
+{% block content %}
+    <div class="page-header">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+        {% include 'forms/product.html' %}
+
+        </div>
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        {% for product in products %}
+                            <div id="{{ product.id }}" class="tab-pane fade
+                                {% if forloop.counter0 == 0 %}
+                                in active
+                                {% endif %}">
+                                <h3>{{ product.name }}</h3>
+                                <p>Kcal: {{ product.kcalPer100g }}</p>
+                                <p>Białko: {{ product.proteinsPer100g }}</p>
+                                <p>Błonnik: {{ product.fiberPer100g }}</p>
+                                <p>Tłuszcz: {{ product.fatPer100g }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <ul class="nav nav-pills nav-stacked">
+                        {% for product in products %}
+
+                            <li {% if productId == product.id %}
+                                class="active"
+                            {% endif %}>
+                                <a href="/products/{{ product.id }}">{{ product.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
 {% endblock %}
