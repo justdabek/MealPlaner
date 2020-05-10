@@ -15,14 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import index, products
+from .views import index, products,signUp,login_view, logout_view, change_password
 
 
 from django.conf import settings
 
 urlpatterns = [
-    path(r'',index),
+    path('',index, name="index"),
+    path('signup/', signUp, name="signup"),
+    path('login/', login_view, name="login"),
+    path('logout/', logout_view, name="logout"),
+    path('change_password/$', change_password, name="change_password"),
     path('admin/', admin.site.urls),
     path('products/',products),
     path('products/<pk>/',products)
+
+
 ]

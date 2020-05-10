@@ -7,3 +7,4 @@ class Product(models.Model):
     proteinsPer100g=models.FloatField()
     fiberPer100g=models.FloatField()
     fatPer100g=models.FloatField()
+
