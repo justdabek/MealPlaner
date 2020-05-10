@@ -68,31 +68,33 @@ def change_password(request):
 def products(request,pk='None'):
     populate_db()
     products=get_products()
-    productId = 'None'
-
-    if request.method == "POST":
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            post = form.save(commit=False)
-            post.published_date = datetime.now()
-            post.save()
-    else:
-        if(pk!='None'):
-            product = Product.objects.get(id=pk)
-            productId= product.id
-            form = ProductForm(instance=product)
-        else:
-            form=ProductForm()
 
     context = {
         'products':products,
-        'productId': productId,
         'current_date':datetime.now(),
         'title':'Product list',
-        'form':form
     }
 
     return render(request, 'products.html', context)
+
+def product_single(request,pk):
+    if (pk == 'new'):
+        product = Product()
+        form = ProductForm()
+    else:
+        product = Product.objects.get(id=pk)
+        form=ProductForm(instance=product)
+
+    if request.method == "POST":
+        form = ProductForm(request.POST,instance=product)
+        if form.is_valid():
+            form.save()
+
+    context={
+        'form':form
+    }
+
+    return render(request,'forms/product.html',context)
 
 def get_products():
     result=Product.objects.all()
