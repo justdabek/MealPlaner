@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import index, products,signUp,login_view, logout_view, change_password,product_single
+from .views import index, products,signUp,login_view, logout_view, change_password,product_single,meals
 
 
 from django.conf import settings
@@ -28,8 +28,7 @@ urlpatterns = [
     path('change_password/$', change_password, name="change_password"),
     path('admin/', admin.site.urls),
     path('products/',products),
-    path('products/<pk>/',product_single)
-
-
+    path('products/<pk>/',product_single),
+    path('meals/<date>/',meals)
 
 ]

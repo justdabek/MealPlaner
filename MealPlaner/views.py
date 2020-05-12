@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from datetime import datetime
-from .models import Product
-from .forms import ProductForm, SignUpForm
+from .models import Product, Meal
+from .forms import ProductForm, SignUpForm, MealForm
+
 
 def index(request):
     auth = True
@@ -108,3 +109,33 @@ def populate_db():
         Product(name='Mleko',kcalPer100g=70,proteinsPer100g=5.2,fiberPer100g=3.1,fatPer100g=56).save()
         Product(name='Pomidor',kcalPer100g=8,proteinsPer100g=4.2,fiberPer100g=0.1,fatPer100g=4).save()
 
+def meals(request,date):
+    try:
+        meal = Meal.objects.get(date=date)
+        form = MealForm(instance=meal)
+    except:
+        meal=Meal()
+        form=MealForm()
+
+
+    if request.method == "POST":
+        form = MealForm(request.POST,instance=meal)
+        if form.is_valid():
+            meal=form.save(commit=False)
+            meal.save()
+            form.save_m2m()
+
+    meal_currentdate=get_meals(date)
+    context={
+        'title':'Meals',
+        'date':date,
+        'current_date':datetime.now(),
+        'meal_currentdate':meal_currentdate,
+        'form':form
+    }
+
+    return render(request,'meals.html',context)
+
+def get_meals(date):
+    result=Meal.objects.filter(date=date)
+    return result

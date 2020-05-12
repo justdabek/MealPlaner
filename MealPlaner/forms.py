@@ -1,5 +1,6 @@
 from django import forms
-from .models import Product
+from .models import Product, Meal
+
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -22,3 +23,10 @@ class SignUpForm(forms.Form):
         self.fields['password'].widget.attr={
             'class':'form-control'
         }
+
+class MealForm(forms.ModelForm):
+    products=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Product.objects.all())
+    class Meta:
+        model=Meal
+        fields=('date','typeOfMeal','products')
+
