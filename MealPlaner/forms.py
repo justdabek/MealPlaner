@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product
+from .models import Product, Goal
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -22,3 +22,14 @@ class SignUpForm(forms.Form):
         self.fields['password'].widget.attr={
             'class':'form-control'
         }
+
+class GoalForm(forms.ModelForm):
+    class Meta:
+        model = Goal
+        fields = [
+            'activity',
+            'age',
+            'sex',
+            'height_cm',
+            'target_weight',
+        ]
