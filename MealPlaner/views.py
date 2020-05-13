@@ -53,7 +53,7 @@ def login_view(request):
             return redirect('index')
         else:
             messages.error(request,"Check your user name and password")
-    return render(request,'login.html')
+    return render(request,'login.html',{'current_date':datetime.now()})
 
 @login_required(redirect_field_name='login')
 def change_password(request):
@@ -64,7 +64,8 @@ def change_password(request):
             user.set_password(password)
             user.save()
         return redirect('index')
-    return render(request,'change_password.html')
+
+    return render(request,'change_password.html', {'current_date':datetime.now()})
 
 def products(request,pk='None'):
     populate_db()
@@ -91,11 +92,18 @@ def product_single(request,pk):
         if form.is_valid():
             form.save()
 
+
     context={
-        'form':form
+        'form':form,
+        'current_date': datetime.now(),
     }
 
     return render(request,'forms/product.html',context)
+
+def product_delete(request,pk):
+    p = Product.objects.get(id=pk)
+    p.delete()
+    return redirect('/products/')
 
 def get_products():
     result=Product.objects.all()
