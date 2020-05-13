@@ -4,8 +4,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from datetime import datetime
-from .models import Product
-from .forms import ProductForm, SignUpForm
+from .models import Product, Goal
+from .forms import ProductForm, SignUpForm, GoalForm
 
 def index(request):
     auth = True
@@ -108,3 +108,23 @@ def populate_db():
         Product(name='Mleko',kcalPer100g=70,proteinsPer100g=5.2,fiberPer100g=3.1,fatPer100g=56).save()
         Product(name='Pomidor',kcalPer100g=8,proteinsPer100g=4.2,fiberPer100g=0.1,fatPer100g=4).save()
 
+def goal_view(request):
+
+    form = GoalForm()
+    # if request.method == "POST":
+    #     form = GoalForm(request.POST)       # get to get dict value
+    #     print(form.cleaned_data)
+    #     Goal.objects.create(**form.cleaned_data)
+    # else:
+    #     print(form.errors)
+
+    form = GoalForm(request.POST or None)
+    if form.is_valid():
+        print(form.cleaned_data)
+        form.save()
+        form = GoalForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'goal.html', context)
