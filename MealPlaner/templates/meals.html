@@ -6,16 +6,13 @@
     </div>
 
     <div class="row">
-        <h1>{{ date }}</h1>
-        {% for meal in meal_currentdate %}
-                        <tr>
-                            <th scope="row">{{ meal.id }}</th>
-                            <td>{{ meal.typeOfMeal }}</td>
-                            {% for product in meal.products.all %}
-                            <td>{{ product.name }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                    {% include 'forms/meal.html'%}
+        <nav aria-label="...">
+            <ul class="pager">
+                <li class="previous"><a href="/meals/{{ prev_day_date|date:"Y-m-d" }}"><span aria-hidden="true">&larr;</span> Poprzedni</a></li>
+                <li><h3 style="display: inline-block; margin:0;'">{{ date }}</h3></li>
+                <li class="next"><a href="/meals/{{ next_day_date|date:"Y-m-d" }}">Następny <span aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
+        {% include 'forms/meal.html' %}
     </div>
 {% endblock %}

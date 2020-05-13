@@ -3,9 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from datetime import datetime
-from .models import Product, Meal
-from .forms import ProductForm, SignUpForm, MealForm
+from datetime import datetime, timedelta
+from .models import Product, Breakfast, Lunch, Dinner
+from .forms import ProductForm, SignUpForm, BreakfastForm, LunchForm, DinnerForm
 
 
 def index(request):
@@ -111,31 +111,72 @@ def populate_db():
 
 def meals(request,date):
     try:
-        meal = Meal.objects.get(date=date)
-        form = MealForm(instance=meal)
+        lunch = Lunch.objects.get(date=date)
+        formLunch = LunchForm(instance=lunch)
     except:
-        meal=Meal()
-        form=MealForm()
+        lunch = Lunch()
+        formLunch = LunchForm()
 
+    try:
+        breakfast = Breakfast.objects.get(date=date)
+        formBreakfast = BreakfastForm(instance=breakfast)
 
-    if request.method == "POST":
-        form = MealForm(request.POST,instance=meal)
+    except:
+        breakfast = Breakfast()
+        formBreakfast = BreakfastForm()
+
+    try:
+        dinner = Dinner.objects.get(date=date)
+        formDinner = DinnerForm(instance=dinner)
+    except:
+        dinner = Dinner()
+        formDinner = DinnerForm()
+
+    if request.method == "POST" and 'btnbreakfast' in request.POST:
+        form = BreakfastForm(request.POST, instance=breakfast)
         if form.is_valid():
-            meal=form.save(commit=False)
+            meal = form.save(commit=False)
+            meal.date = date
             meal.save()
             form.save_m2m()
+            return redirect('/meals/'+date)
 
-    meal_currentdate=get_meals(date)
+    if request.method == "POST" and 'btnlunch' in request.POST:
+        form = LunchForm(request.POST, instance=lunch)
+        if form.is_valid():
+            meal = form.save(commit=False)
+            meal.date = date
+            meal.save()
+            form.save_m2m()
+            return redirect('/meals/'+date)
+
+    if request.method == "POST" and 'btndinner' in request.POST:
+        form = DinnerForm(request.POST, instance=dinner)
+        if form.is_valid():
+            meal = form.save(commit=False)
+            meal.date = date
+            meal.save()
+            form.save_m2m()
+            return redirect('/meals/'+date)
+
+
+    # meal_currentdate=get_meals(date)
     context={
         'title':'Meals',
         'date':date,
-        'current_date':datetime.now(),
-        'meal_currentdate':meal_currentdate,
-        'form':form
+        'prev_day_date': datetime.strptime(date, '%Y-%m-%d') + timedelta(days=-1),
+        'next_day_date': datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1),
+        'current_date': datetime.now(),
+        'formBreakfast':formBreakfast,
+        'formLunch':formLunch,
+        'formDinner':formDinner
     }
+
+
+
 
     return render(request,'meals.html',context)
 
-def get_meals(date):
-    result=Meal.objects.filter(date=date)
-    return result
+# def get_meals(date):
+#     result=Meal.objects.filter(date=date)
+#     return result
