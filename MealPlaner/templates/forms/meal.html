@@ -1,0 +1,26 @@
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Sniadanie</h2>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ formBreakfast.as_p }}
+                <button type="submit" class="save btn btn-default" name="btnbreakfast">Save</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <h2>Obiad</h2>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ formLunch.as_p }}
+                <button type="submit" class="save btn btn-default" name="btnlunch">Save</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <h2>Kolacja</h2>
+            <form method="POST" class="post-form">{% csrf_token %}
+                {{ formDinner.as_p }}
+                <button type="submit" class="save btn btn-default" name="btndinner">Save</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

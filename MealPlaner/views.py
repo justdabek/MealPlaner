@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from datetime import datetime
-from .models import Product, Goal
-from .forms import ProductForm, SignUpForm, GoalForm
+from .models import Product, Goal, Breakfast, Lunch, Dinner
+from .forms import ProductForm, SignUpForm, GoalForm, BreakfastForm, LunchForm, DinnerForm
+from datetime import datetime, timedelta
 
 def index(request):
     auth = True
@@ -52,7 +53,7 @@ def login_view(request):
             return redirect('index')
         else:
             messages.error(request,"Check your user name and password")
-    return render(request,'login.html')
+    return render(request,'login.html',{'current_date':datetime.now()})
 
 @login_required(redirect_field_name='login')
 def change_password(request):
@@ -63,7 +64,8 @@ def change_password(request):
             user.set_password(password)
             user.save()
         return redirect('index')
-    return render(request,'change_password.html')
+
+    return render(request,'change_password.html', {'current_date':datetime.now()})
 
 def products(request,pk='None'):
     populate_db()
@@ -90,11 +92,18 @@ def product_single(request,pk):
         if form.is_valid():
             form.save()
 
+
     context={
-        'form':form
+        'form':form,
+        'current_date': datetime.now(),
     }
 
     return render(request,'forms/product.html',context)
+
+def product_delete(request,pk):
+    p = Product.objects.get(id=pk)
+    p.delete()
+    return redirect('/products/')
 
 def get_products():
     result=Product.objects.all()
@@ -128,3 +137,75 @@ def goal_view(request):
         'form': form,
     }
     return render(request, 'goal.html', context)
+
+def meals(request,date):
+    try:
+        lunch = Lunch.objects.get(date=date)
+        formLunch = LunchForm(instance=lunch)
+    except:
+        lunch = Lunch()
+        formLunch = LunchForm()
+
+    try:
+        breakfast = Breakfast.objects.get(date=date)
+        formBreakfast = BreakfastForm(instance=breakfast)
+
+    except:
+        breakfast = Breakfast()
+        formBreakfast = BreakfastForm()
+
+    try:
+        dinner = Dinner.objects.get(date=date)
+        formDinner = DinnerForm(instance=dinner)
+    except:
+        dinner = Dinner()
+        formDinner = DinnerForm()
+
+    if request.method == "POST" and 'btnbreakfast' in request.POST:
+        form = BreakfastForm(request.POST, instance=breakfast)
+        if form.is_valid():
+            meal = form.save(commit=False)
+            meal.date = date
+            meal.save()
+            form.save_m2m()
+            return redirect('/meals/'+date)
+
+    if request.method == "POST" and 'btnlunch' in request.POST:
+        form = LunchForm(request.POST, instance=lunch)
+        if form.is_valid():
+            meal = form.save(commit=False)
+            meal.date = date
+            meal.save()
+            form.save_m2m()
+            return redirect('/meals/'+date)
+
+    if request.method == "POST" and 'btndinner' in request.POST:
+        form = DinnerForm(request.POST, instance=dinner)
+        if form.is_valid():
+            meal = form.save(commit=False)
+            meal.date = date
+            meal.save()
+            form.save_m2m()
+            return redirect('/meals/'+date)
+
+
+    # meal_currentdate=get_meals(date)
+    context={
+        'title':'Meals',
+        'date':date,
+        'prev_day_date': datetime.strptime(date, '%Y-%m-%d') + timedelta(days=-1),
+        'next_day_date': datetime.strptime(date, '%Y-%m-%d') + timedelta(days=1),
+        'current_date': datetime.now(),
+        'formBreakfast':formBreakfast,
+        'formLunch':formLunch,
+        'formDinner':formDinner
+    }
+
+
+
+
+    return render(request,'meals.html',context)
+
+# def get_meals(date):
+#     result=Meal.objects.filter(date=date)
+#     return result

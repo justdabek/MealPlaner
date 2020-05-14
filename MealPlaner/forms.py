@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, Goal
+from .models import Product, Goal, Breakfast, Lunch, Dinner
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -33,3 +33,26 @@ class GoalForm(forms.ModelForm):
             'height_cm',
             'target_weight',
         ]
+# class MealForm(forms.ModelForm):
+#     products=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Product.objects.all())
+#     class Meta:
+#         model=Meal
+#         fields=('date','typeOfMeal','products')
+
+class BreakfastForm(forms.ModelForm):
+    products=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Product.objects.all())
+    class Meta:
+        model=Breakfast
+        fields=('products',)
+
+class LunchForm(forms.ModelForm):
+    products=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Product.objects.all())
+    class Meta:
+        model=Lunch
+        fields=('products',)
+
+class DinnerForm(forms.ModelForm):
+    products=forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple, queryset=Product.objects.all())
+    class Meta:
+        model=Dinner
+        fields=('products',)
