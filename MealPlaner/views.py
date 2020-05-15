@@ -118,9 +118,10 @@ def populate_db():
         Product(name='Pomidor',kcalPer100g=8,proteinsPer100g=4.2,fiberPer100g=0.1,fatPer100g=4).save()
 
 def goal_view(request):
+    flag_goal_registered = False
 
     form = GoalForm()
-    # if request.method == "POST":
+    
     #     form = GoalForm(request.POST)       # get to get dict value
     #     print(form.cleaned_data)
     #     Goal.objects.create(**form.cleaned_data)
@@ -128,13 +129,82 @@ def goal_view(request):
     #     print(form.errors)
 
     form = GoalForm(request.POST or None)
+    user_goal = Goal()
+
+    all_obj = Goal.objects.all()
+    print("------------")
+    print(all_obj)
+    # print("all_obj[1]: ", all_obj[1])
+
+    
+    for x in all_obj:
+        print(x.activity)
+        print(x.user_id)
+        print(request.user)
+        print(str(request.user) == str(x.user_id))
+        if str(x.user_id) == str(request.user):
+            print("Username known")
+            flag_goal_registered = True
+            user_goal = x
+            user_goal.get_kcal_needed()
+
+    print("form activity", form['activity'])
+    print(flag_goal_registered)
+
+    if flag_goal_registered == True:
+            
+        # form = GoalForm({'activity': user_goal.activity,
+        #                 'age': user_goal.age,
+        #                 'sex': user_goal.sex,
+        #                 'height_cm': user_goal.height_cm,
+        #                 'target_weight': user_goal.target_weight
+        #                 })
+        print("FORM:", form)
+        
+
     if form.is_valid():
         print(form.cleaned_data)
-        form.save()
-        form = GoalForm()
+        print(form.cleaned_data['activity'])
+        print('user:', request.user)
+        
+        if flag_goal_registered == False: 
+            Goal.objects.create(**{"user_id":request.user},**form.cleaned_data)
+        else:
+            ### the goal already exists:
+            Goal.objects.filter(user_id=request.user).update(
+                activity=           form.cleaned_data['activity'],
+                age=                form.cleaned_data['age'],
+                sex=                form.cleaned_data['sex'],
+                height_cm=          form.cleaned_data['height_cm'],
+                target_weight=      form.cleaned_data['target_weight']
+            )     
+
+    if request.method == "POST":
+        if "change_btn" in request.POST:
+            if flag_goal_registered == True:
+                Goal.objects.filter(user_id=request.user).delete()
+                form = GoalForm(request.POST or None)
+                flag_goal_registered = False
+       
+
+            # user_goal.save(**{"user_id":request.user},**form.cleaned_data)
+
+
+        # user_goal.user_id = request.user
+        # user_goal.activity = form.activity
+        # user_goal.age = form.age
+        # user_goal.sex = form.sex 
+        # user_goal.height_cm = form.height_cm
+        # user_goal.target_weight = form.target_weight 
+        # user_goal.save()
+
+        # form.save()
+        # form = GoalForm()
 
     context = {
         'form': form,
+        'user_goal': user_goal,
+        'flag_goal_registered': flag_goal_registered,
     }
     return render(request, 'goal.html', context)
 

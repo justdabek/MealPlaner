@@ -28,6 +28,7 @@ class Goal(models.Model):
 
     activity_wages = {'Rarely': 1.4, 'Moderately': 1.7, 'Often': 2.0}
     
+    user_id = models.CharField(max_length=100, blank=True)
     activity = models.CharField(max_length=10,  choices=ACTIVITY_CHOICES)
     age = models.DecimalField(decimal_places=0, max_digits=3, validators=[
         MaxValueValidator(150),
@@ -51,17 +52,22 @@ class Goal(models.Model):
 
     def get_kcal_needed(self):
         ## ze wzoru Mifflina - St. Jeor
-        if self.sex == MALE:
-            self.target_kcal = 10*self.target_weight + 6.25 * self.height_cm - 5 * self.age + 5     # PPM 
-            self.target_kcal *= activity_wages.get(self.activity, 0)                                # CPM
-        elif self.sex == FEMALE:
-            self.target_kcal = 10*self.target_weight + 6.25 * self.height_cm - 5 * self.age - 161   # PPM
-            self.target_kcal *= activity_wages.get(self.activity, 0)                                # CPM
+        if self.sex == "Male":
+            self.target_kcal = 10*float(self.target_weight) + 6.25 * float(self.height_cm) - 5 * float(self.age) + 5     # PPM 
+            self.target_kcal = self.target_kcal * self.activity_wages.get(self.activity, 0)                                # CPM
+            print("------KCAL-------")
+            print(self.target_kcal)
+
+        elif self.sex == "Female":
+            self.target_kcal = 10*float(self.target_weight) + 6.25 * float(self.height_cm) - 5 * float(self.age) - 161   # PPM
+            self.target_kcal = self.target_kcal * self.activity_wages.get(self.activity, 0)                                # CPM
+            print("------KCAL-------")
+            print(self.target_kcal)
         else: 
             assert 0, "Wrong sex given"
         
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 # class Meal(models.Model):
 #     MEAL_TYPES=(('S','Sniadanie'),('O','Obiad'),('K','Kolacja'))

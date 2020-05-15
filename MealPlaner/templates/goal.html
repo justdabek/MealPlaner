@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if flag_goal_registered == False %}
+
     <div class="row">
         <h2>Goal</h2>
         <p>Please provide information about your body:</p>
@@ -7,5 +9,34 @@
             {{ form.as_p }}
             <button type="submit" class="save btn btn-default">Save</button>
         </form>
+        {% comment %}
+        <form method="POST" class="post-form">{% csrf_token %}
+            <button type="submit" class="save btn btn-default">debug</button>
+        </form>
+        {% endcomment %}
     </div>
+
+</div>
+{% else %}
+<div class="row">
+    <h2>Goal</h2>
+    <p>Provided information about your body: </p>
+    <ul>
+        <li><b>Username:</b>       {{user_goal.user_id}}</li>
+        <li><b>Activity:</b>       {{user_goal.activity}}</li>
+        <li><b>Age:</b>            {{user_goal.age}}</li>
+        <li><b>Sex:</b>            {{user_goal.sex}}</li>
+        <li><b>Height_cm:</b>      {{user_goal.height_cm}}</li>
+        <li><b>Target weight:</b>  {{user_goal.target_weight}}</li>
+        <p></p>
+        <li><h1><b>Target kcal:</b>    {{user_goal.target_kcal}}</h1></li>
+    </ul>
+    <form method="POST" class="post-form">{% csrf_token %}
+        <button type="submit" name="change_btn" class="save btn btn-default">Change</button>
+    </form>
+</div>
+
+
+
+{% endif %}
 {% endblock %}
